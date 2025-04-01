@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Documentary Festival Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <style>
+    html, body { margin: 0; padding: 0; width: 100%; height: 100%; }
+    #map { width: 100%; height: 100%; }
+    body {
+      cursor: url('https://cdn-icons-png.flaticon.com/32/69/69931.png'), auto;
+    }
+    #searchBar {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      background: white;
+      padding: 8px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body>
+  <div id="searchBar">
+    <input type="text" id="searchInput" placeholder="키워드 검색" />
+  </div>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script>
+    const map = L.map('map', { zoomSnap: 0.1 }).setView([20, 0], 2);
+
+    // 흑백 배경 지도 (1개만 명확히 설정)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://carto.com/">CARTO</a>'
+    }).addTo(map);
+
+    const markerCluster = L.markerClusterGroup();
+    const festivals = [
+      {
+        name: "DOC NYC 🎬", lat: 40.7128, lng: -74.0060,
+        keywords: ["미국", "뉴욕", "도시"]
+      },
+      {
+        name: "RIDM 🎬", lat: 45.5017, lng: -73.5673,
+        keywords: ["몬트리올", "인권", "도시"]
+      },
+      {
+        name: "GZDOC 🎬", lat: 23.1291, lng: 113.2644,
+        keywords: ["중국", "환경", "인권"]
+      },
+      {
+        name: "Sheffield Doc/Fest 🎬", lat: 53.3811, lng: -1.4701,
+        keywords: ["영국", "음악", "산업"]
+      },
+      {
+        name: "CPH:DOX 🎬", lat: 55.6761, lng: 12.5683,
+        keywords: ["덴마크", "예술", "실험"]
+      },
+      {
+        name: "Visions du Réel 🎬", lat: 46.3833, lng: 6.2333,
+        keywords: ["스위스", "예술", "국제"]
+      },
+      {
+        name: "DocsBarcelona 🎬", lat: 41.3851, lng: 2.1734,
+        keywords: ["스페인", "바르셀로나", "도시"]
+      },
+      {
+        name: "Docaviv 🎬", lat: 32.0853, lng: 34.7818,
+        keywords: ["이스라엘", "중동", "사회"]
+      },
+      {
+        name: "Ji.hlava 🎬", lat: 49.3961, lng: 15.5912,
+        keywords: ["체코", "실험", "중유럽"]
+      },
+      {
+        name: "Doclisboa 🎬", lat: 38.7169, lng: -9.1399,
+        keywords: ["포르투갈", "사회", "국제"]
+      }
+    ];
+
+    const markers = [];
+
+    festivals.forEach(f => {
+      const marker = L.marker([f.lat, f.lng]).bindPopup(f.name);
+      marker.keywords = f.keywords;
+      markerCluster.addLayer(marker);
+      markers.push(marker);
+    });
+
+    map.addLayer(markerCluster);
+
+    // 검색 필터
+    document.getElementById("searchInput").addEventListener("input", function () {
+      const query = this.value.toLowerCase();
+      markerCluster.clearLayers();
+      markers.forEach(m => {
+        if (m.keywords.some(k => k.toLowerCase().includes(query))) {
+          markerCluster.addLayer(m);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

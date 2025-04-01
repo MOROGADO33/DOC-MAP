@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Documentary Festival Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+  />
+  <style>
+    #map {
+      width: 100%;
+      height: 600px;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script>
+    const map = L.map('map').setView([20, 0], 2);
+
+    // Base layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Marker cluster group
+    const markerCluster = L.markerClusterGroup();
+
+    // Example festival + transport markers
+    const festivals = [
+      {
+        name: "DOC NYC 🎬",
+        lat: 40.7128,
+        lng: -74.0060,
+        extras: [
+          ["공항 ✈️", 40.6413, -73.7781],
+          ["기차역 🚉", 40.7527, -73.9772],
+          ["버스정류장 🚏", 40.7566, -73.9863]
+        ]
+      },
+      {
+        name: "RIDM 🎬",
+        lat: 45.5017,
+        lng: -73.5673,
+        extras: [
+          ["공항 ✈️", 45.4706, -73.7408],
+          ["기차역 🚉", 45.5009, -73.5661],
+          ["버스정류장 🚏", 45.5071, -73.5534]
+        ]
+      },
+      {
+        name: "GZDOC 🎬",
+        lat: 23.1291,
+        lng: 113.2644,
+        extras: [
+          ["공항 ✈️", 23.3925, 113.2988],
+          ["기차역 🚉", 23.1489, 113.2578],
+          ["버스정류장 🚏", 23.1310, 113.2642]
+        ]
+      }
+    ];
+
+    festivals.forEach(f => {
+      const m = L.marker([f.lat, f.lng]).bindPopup(f.name);
+      markerCluster.addLayer(m);
+      f.extras.forEach(e => {
+        const em = L.marker([e[1], e[2]]).bindPopup(`${f.name} ${e[0]}`);
+        markerCluster.addLayer(em);
+      });
+    });
+
+    map.addLayer(markerCluster);
+  </script>
+</body>
+</html>
